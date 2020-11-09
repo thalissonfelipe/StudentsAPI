@@ -17,58 +17,96 @@ namespace StudentsAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Student>> Get() => _studentsService.Get();
+        public ActionResult<List<Student>> Get()
+        {
+            try
+            {
+                return _studentsService.Get();
+            }
+            catch (System.Exception)
+            {
+                return Problem(statusCode: 500);
+            }
+        }
 
         [HttpGet("{id:length(24)}", Name = "GetStudent")]
         public ActionResult<Student> Get(string id)
         {
-            Student student = _studentsService.Get(id);
-
-            if (student == null)
+            try
             {
-                return NotFound();
-            }
+                Student student = _studentsService.Get(id);
 
-            return student;
+                if (student == null)
+                {
+                    return NotFound();
+                }
+
+                return student;
+            }
+            catch (System.Exception)
+            {
+                return Problem(statusCode: 500);
+            }
         }
 
         [HttpPost]
         public ActionResult<Student> Create(Student student)
         {
-            _studentsService.Create(student);
+            try
+            {
+                _studentsService.Create(student);
 
-            return CreatedAtRoute("GetStudent", new { id = student.Id.ToString() }, student);
+                return CreatedAtRoute("GetStudent", new { id = student.Id.ToString() }, student);
+            }
+            catch (System.Exception)
+            {
+                return Problem(statusCode: 500);
+            }
         }
 
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, Student studentIn)
         {
-            Student student = _studentsService.Get(id);
-
-            if (student == null)
+            try
             {
-                return NotFound();
+                Student student = _studentsService.Get(id);
+
+                if (student == null)
+                {
+                    return NotFound();
+                }
+
+                studentIn.Id = id;
+                _studentsService.Update(id, studentIn);
+
+                return NoContent();
             }
-
-            studentIn.Id = id;
-            _studentsService.Update(id, studentIn);
-
-            return NoContent();
+            catch (System.Exception)
+            {
+                return Problem(statusCode: 500);
+            }
         }
 
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)
         {
-            Student student = _studentsService.Get(id);
-
-            if (student == null)
+            try
             {
-                return NotFound();
+                Student student = _studentsService.Get(id);
+
+                if (student == null)
+                {
+                    return NotFound();
+                }
+
+                _studentsService.Remove(student.Id);
+
+                return NoContent();
             }
-
-            _studentsService.Remove(student.Id);
-
-            return NoContent();
+            catch (System.Exception)
+            {
+                return Problem(statusCode: 500);
+            }
         }
     }
 }
